@@ -396,5 +396,5 @@ def predict():
         return render_template('home.html', len = len(texts), texts = texts, most_champion_team = most_champion_team, most_champion_team_times = most_champion_team_times, current_champion_team = current_champion_team, current_champions_team_times = current_champions_team_times, highest_runs_batsman = highest_runs_batsman, highest_runs_runs = highest_runs_runs, highest_wickets_bowler = highest_wickets_bowler, highest_wickets_wickets = highest_wickets_wickets)
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 8080)
-    # app.run()
+#     app.run(host = '0.0.0.0', port = 8080)
+    app.run()
