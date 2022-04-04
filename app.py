@@ -122,9 +122,12 @@ def predict():
     soup = BeautifulSoup(response.text, 'html.parser')
 
     teams_1 = soup.find_all('div', attrs = {'class' : 'match-header'})
-    for team in teams_1:
-        teams_2 = team.find_all('p', attrs = {'class' : 'name'})
-    teams = [team.text for team in teams_2]
+    try:
+      for team in teams_1:
+          teams_2 = team.find_all('p', attrs = {'class' : 'name'})
+      teams = [team.text for team in teams_2]
+    except:
+      pass
 
     match_status = soup.find_all('div', attrs = {'class' : 'match-info match-info-MATCH match-info-MATCH-full-width'})
     try:
