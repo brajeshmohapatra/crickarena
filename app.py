@@ -151,6 +151,27 @@ def predict():
     print('target_runs: ', target_runs)
     print('target_overs: ', target_overs)
 
+    score_wickets = soup.find_all('div', attrs = {'class' : 'ds-text-compact-m ds-text-typo-title'})
+    score_wickets = [sw.text for sw in score_wickets]
+    if innings == 1:
+        runs = int(score_wickets[0].split(') ')[-1].split('/')[0])
+        if '/' in score_wickets[0]:
+            wickets = int(score_wickets[0].split(') ')[-1].split('/')[1])
+        else:
+            wickets = 10
+    elif innings == 2:
+        runs = int(score_wickets[1].split(') ')[-1].split('/')[0])
+        if '/' in score_wickets[1]:
+            wickets = int(score_wickets[1].split(') ')[-1].split('/')[1])
+        else:
+            wickets = 10
+    else:
+        runs = 0
+        wickets = 0
+
+    print('runs: ', runs)
+    print('wickets: ', wickets)
+
     response = requests.get(url + 'full-scorecard')
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -185,24 +206,14 @@ def predict():
     print('batting_team: ', batting_team)
     print('bowling_team: ', bowling_team)
 
-    score_card = soup.find_all('tr', attrs = {'class' : 'ds-border-b ds-border-line ds-font-bold ds-bg-fill-content-alternate ds-text-tight-m'})
-    score_card = [sc.text for sc in score_card]
-    print('score_card:', score_card)
+    overs_data = soup.find_all('tr', attrs = {'class' : 'ds-border-b ds-border-line ds-font-bold ds-bg-fill-content-alternate ds-text-tight-m'})
+    overs_data = [sc.text for sc in overs_data]
+    print('overs_data:', overs_data)
     try:
         if innings == 1:
-            overs = float(score_card[0].split('TOTAL')[-1].split(' Ov')[0])
-            runs = int(score_card[0].split(')')[-1].split('/')[0])
-            if '/' in score_card[0]:
-                wickets = int(score_card[0].split(')')[-1].split('/')[-1])
-            else:
-                wickets = 10
+            overs = float(overs_data[0].split('TOTAL')[-1].split(' Ov')[0])
         elif innings == 2:
-            overs = float(score_card[1].split('TOTAL')[-1].split(' Ov')[0])
-            runs = int(score_card[1].split(')')[-1].split('/')[0])
-            if '/' in score_card[1]:
-                wickets = int(score_card[1].split(')')[-1].split('/')[-1])
-            else:
-                wickets = 10
+            overs = float(overs_data[1].split('TOTAL')[-1].split(' Ov')[0])
 
         overs = float(overs)
         balls = int(np.round((overs % 1) * 10, 0))
@@ -215,8 +226,6 @@ def predict():
         wickets = 0
     print('overs: ', overs)
     print('balls: ', balls)
-    print('runs: ', runs)
-    print('wickets: ', wickets)
 
     try:
         if overs >= 5.1:
