@@ -23,6 +23,7 @@ Flask==2.0.3
 fonttools==4.31.2
 graphviz==0.19.1
 greenlet==1.1.2
+gunicorn==19.9.0
 idna==3.3
 ipykernel==6.9.1
 ipython==8.1.1
