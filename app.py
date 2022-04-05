@@ -90,16 +90,14 @@ def analytics():
 
 def predict():
 
-    fixtures = pd.read_sql_table('fixtures', engine.connect(), columns = ['MATCH', 'URL'])
+    fixtures = pd.read_sql_table('fixtures', engine.connect(), columns = ['HOME TEAM', 'AWAY TEAM', 'MATCH', 'VENUE', 'URL'])
 
     match = request.form['aa']
     url = fixtures[fixtures['MATCH'] == match]['URL'].values[0]
     url = url.split('/')
     url = '/'.join(url[: -1]) + '/'
-
-    teams, toss = [], []
-    venue, toss_winner, toss_loser, batting_team, bowling_team, status = '', '', '', '', '', ''
-    innings, overs, runs, wickets, runs_last_5_overs, wickets_last_5_overs, playoff, knockout, final, target_runs, target_overs = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    teams = [fixtures[fixtures['MATCH'] == match]['HOME TEAM'].values[0], fixtures[fixtures['MATCH'] == match]['AWAY TEAM'].values[0]]
+    venue = fixtures[fixtures['MATCH'] == match]['VENUE'].values[0]
 
     if today == '2022-05-24':
         playoff = 1
@@ -122,80 +120,72 @@ def predict():
     soup = BeautifulSoup(response.text, 'html.parser')
 
     try:
-        teams_1 = soup.find_all('div', attrs = {'class' : 'match-header'})
-        for team in teams_1:
-            teams_2 = team.find_all('p', attrs = {'class' : 'name'})
-        teams = [team.text for team in teams_2]
+        status = soup.find_all('p', attrs = {'class' : 'ds-text-tight-m ds-font-regular ds-truncate ds-text-typo-title'})
+        status = status[0].text
     except:
-        pass
+        status = 'Please stay tuned.'
 
-    match_status = soup.find_all('div', attrs = {'class' : 'match-info match-info-MATCH match-info-MATCH-full-width'})
-    try:
-        for ms in match_status:
-            verifier = ms.find('div', attrs = {'class' : 'status-text'})
-        if 'chose to' in verifier.text:
-            innings = 1
-        elif 'need' in verifier.text:
-            innings = 2
-    except:
-        pass
+    if 'chose to' in status:
+        innings = 1
+    elif 'need' in status:
+        innings = 2
+    else:
+        innings = 0
 
-    targets = soup.find_all('div', attrs = {'class' : 'match-info match-info-MATCH match-info-MATCH-full-width'})
     try:
-        for trgt in targets:
-            target_overs = int(trgt.text.split(' ov')[0].split('(')[1].split('/')[1])
-            target_runs = int(trgt.text.split('target ')[1].split(')')[0])
+        targets = soup.find_all('span', attrs = {'class' : 'ds-text-compact-s ds-mr-0.5'})
+        targets = [trgt.text for trgt in targets if 'target' in trgt.text]
+        target_runs = int(targets[0].split(')')[0].split('target ')[-1])
+        target_overs = float(targets[0].split('(')[-1].split(' ov')[0].split('/')[-1])
     except:
-        pass
+        target_runs = 0
+        target_overs = 0
 
     response = requests.get(url + 'full-scorecard')
     soup = BeautifulSoup(response.text, 'html.parser')
 
     try:
-        venue = soup.find('td', attrs = {'class' : 'match-venue'})
-        venue = venue.text
-    except:
-        pass
-
-    try:
-        toss_result = soup.find_all('tr')
-        toss = [t for t in toss_result if 'Toss' in t.text]
-        toss_winner = toss[0].text.split(',')[0].split('Toss')[1]
+        toss_result = soup.find_all('span', attrs = {'class' : 'ds-text-tight-s ds-font-regular'})
+        toss = [tr.text for tr in toss_result if ', elected' in tr.text]
+        toss_winner = toss[0].split(',')[0]
         toss_loser = [team for team in teams if team != toss_winner]
         toss_loser = toss_loser[0]
     except:
-        pass
+        toss_winner = ''
+        toss_loser = ''
 
     try:
-        if 'bat' in toss[0].text and innings == 1:
+        if 'bat' in toss[0] and innings == 1:
             batting_team = toss_winner
             bowling_team = toss_loser
-        elif 'bat' in toss[0].text and innings == 2:
+        elif 'bat' in toss[0] and innings == 2:
             batting_team = toss_loser
             bowling_team = toss_winner
-        elif 'field' in toss[0].text and innings == 1:
+        elif 'field' in toss[0] and innings == 1:
             batting_team = toss_loser
             bowling_team = toss_winner
         else:
             batting_team = toss_winner
             bowling_team = toss_loser
     except:
-        pass
+        batting_team = ''
+        bowling_team = ''
 
-    status = soup.find_all('tfoot')
+    score_card = soup.find_all('tr', attrs = {'class' : 'ds-border-b ds-border-line ds-font-bold ds-bg-fill-content-alternate ds-text-tight-m'})
+    score_card = [sc.text for sc in score_card]
     try:
         if innings == 1:
-            overs = status[0].text.split(' Ov')[0].split('(')[1]
-            runs = status[0].text.split('/')[0].split(')')[-1]
-            if '/' in status[0].text:
-                wickets = int(status[0].text.split('/')[1][0])
+            overs = score_card[0].split('TOTAL')[-1].split(' Ov')[0]
+            runs = int(score_card[0].split(')')[-1].split('/')[0])
+            if '/' in score_card[0].text:
+                wickets = int(score_card[0].split(')')[-1].split('/')[-1])
             else:
                 wickets = 10
         elif innings == 2:
-            overs = status[1].text.split(' Ov')[0].split('(')[1]
-            runs = status[1].text.split('/')[0].split(')')[-1]
-            if '/' in status[1].text:
-                wickets = int(status[1].text.split('/')[1][0])
+            overs = score_card[1].split('TOTAL')[-1].split(' Ov')[0]
+            runs = int(score_card[1].split(')')[-1].split('/')[0])
+            if '/' in score_card[1].text:
+                wickets = int(score_card[1].split(')')[-1].split('/')[-1])
             else:
                 wickets = 10
 
@@ -204,25 +194,22 @@ def predict():
         overs = int(overs)
         runs = int(runs)
     except:
-        pass
+        overs = 0
+        balls = 0
+        runs = 0
 
     try:
         if overs >= 5.1:
-            recent = soup.find('div', attrs = {'class' : 'recent-overs'})
-            runs_last_5_overs = int(recent.text.split('/')[0].split('\xa0')[-1])
-            wickets_last_5_overs = int(recent.text.split('/')[-1].split(' ')[0])
+            recent = soup.find_all('div', attrs = {'class' : 'ds-text-tight-s ds-font-regular ds-overflow-x-auto ds-scrollbar-hide ds-whitespace-nowrap ds-mt-1 md:ds-mt-0 lg:ds-flex lg:ds-items-center lg:ds-justify-between lg:ds-px-4 lg:ds-py-2 lg:ds-bg-fill-content-alternate ds-text-ui-typo-mid md:ds-text-typo-paragraph'})
+            recent = recent[0].text
+            runs_last_5_overs = int(recent.split('/')[0].split('\xa0')[-1])
+            wickets_last_5_overs = int(recent.split('/')[-1].split(' ')[0])
         else:
-            pass
+            runs_last_5_overs = 0
+            wickets_last_5_overs = 0
     except:
-        pass
-
-    try:
-        status = soup.find_all('div', attrs = {'class' : 'match-header-container'})
-        status = status[0].find_all('div', attrs = {'class' : 'status-text'})
-        status = status[0].text
-    except:
-        pass
-
+        runs_last_5_overs = 0
+        wickets_last_5_overs = 0
 
     if request.method == 'POST':
         
@@ -345,6 +332,7 @@ def predict():
 
         if innings == 1:
             balls_remaining = 120 - ((int(overs) * 6) + int(balls))
+            print('balls_remaining: ', balls_remaining)
             if ('Lucknow Super Giants' in teams) or ('Gujarat Titans' in teams):
                 return render_template('predict.html', prediction_text = 'Gujarat Titans and Lucknow Super Giants are new to IPL and have no past data for accurate prediction. Rest assured, we will add these teams in the coming edition. Thank you for understanding.', batting_team = batting_team, bowling_team = bowling_team, venue = venue, runs = runs, wickets = wickets, runs_last_5_overs = runs_last_5_overs, wickets_last_5_overs = wickets_last_5_overs, toss_winner = toss_winner, overs = str(overs) + '.' + str(balls), innings = innings)
             else:
@@ -364,6 +352,8 @@ def predict():
         elif innings == 2:
             balls_remaining = (int(target_overs) * 6) - ((int(overs) * 6) + int(balls))
             runs_required = int(target_runs) - int(runs)
+            print('balls_remaining :', balls_remaining)
+            print('runs_required :', runs_required)
             if ('Lucknow Super Giants' in teams) or ('Gujarat Titans' in teams):
                 return render_template('predict.html', prediction_text = 'Gujarat Titans and Lucknow Super Giants are new to IPL and have no past data for accurate prediction. Rest assured, we will add these teams in the coming edition. Thank you for understanding.', batting_team = batting_team, bowling_team = bowling_team, venue = venue, runs = runs, wickets = wickets, runs_last_5_overs = runs_last_5_overs, wickets_last_5_overs = wickets_last_5_overs, toss_winner = toss_winner, overs = str(overs) + '.' + str(balls), innings = innings)
             else:
