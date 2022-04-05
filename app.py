@@ -98,6 +98,8 @@ def predict():
     url = '/'.join(url[: -1]) + '/'
     teams = [fixtures[fixtures['MATCH'] == match]['HOME TEAM'].values[0], fixtures[fixtures['MATCH'] == match]['AWAY TEAM'].values[0]]
     venue = fixtures[fixtures['MATCH'] == match]['VENUE'].values[0]
+    print('teams: ', teams)
+    print('venue: ', venue)
 
     if today == '2022-05-24':
         playoff = 1
@@ -115,6 +117,10 @@ def predict():
         playoff = 1
         knockout = 1
         final = 1
+    else:
+        playoff = 0
+        knockout = 0
+        final = 0
 
     response = requests.get(url + 'live-cricket-score')
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -124,6 +130,7 @@ def predict():
         status = status[0].text
     except:
         status = 'Please stay tuned.'
+    print('status :', status)
 
     if 'chose to' in status:
         innings = 1
@@ -131,6 +138,7 @@ def predict():
         innings = 2
     else:
         innings = 0
+    print('innings: ', innings)
 
     try:
         targets = soup.find_all('span', attrs = {'class' : 'ds-text-compact-s ds-mr-0.5'})
@@ -140,6 +148,8 @@ def predict():
     except:
         target_runs = 0
         target_overs = 0
+    print('target_runs: ', target_runs)
+    print('target_overs: ', target_overs)
 
     response = requests.get(url + 'full-scorecard')
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -153,6 +163,8 @@ def predict():
     except:
         toss_winner = ''
         toss_loser = ''
+    print('toss_winner: ', toss_winner)
+    print('toss_loser: ', toss_loser)
 
     try:
         if 'bat' in toss[0] and innings == 1:
@@ -170,21 +182,24 @@ def predict():
     except:
         batting_team = ''
         bowling_team = ''
+    print('batting_team: ', batting_team)
+    print('bowling_team: ', bowling_team)
 
     score_card = soup.find_all('tr', attrs = {'class' : 'ds-border-b ds-border-line ds-font-bold ds-bg-fill-content-alternate ds-text-tight-m'})
     score_card = [sc.text for sc in score_card]
+    print('score_card:', score_card)
     try:
         if innings == 1:
-            overs = score_card[0].split('TOTAL')[-1].split(' Ov')[0]
+            overs = float(score_card[0].split('TOTAL')[-1].split(' Ov')[0])
             runs = int(score_card[0].split(')')[-1].split('/')[0])
-            if '/' in score_card[0].text:
+            if '/' in score_card[0]:
                 wickets = int(score_card[0].split(')')[-1].split('/')[-1])
             else:
                 wickets = 10
         elif innings == 2:
-            overs = score_card[1].split('TOTAL')[-1].split(' Ov')[0]
+            overs = float(score_card[1].split('TOTAL')[-1].split(' Ov')[0])
             runs = int(score_card[1].split(')')[-1].split('/')[0])
-            if '/' in score_card[1].text:
+            if '/' in score_card[1]:
                 wickets = int(score_card[1].split(')')[-1].split('/')[-1])
             else:
                 wickets = 10
@@ -197,6 +212,11 @@ def predict():
         overs = 0
         balls = 0
         runs = 0
+        wickets = 0
+    print('overs: ', overs)
+    print('balls: ', balls)
+    print('runs: ', runs)
+    print('wickets: ', wickets)
 
     try:
         if overs >= 5.1:
@@ -210,6 +230,8 @@ def predict():
     except:
         runs_last_5_overs = 0
         wickets_last_5_overs = 0
+    print('runs_last_5_overs: ', runs_last_5_overs)
+    print('wickets_last_5_overs:', wickets_last_5_overs)
 
     if request.method == 'POST':
         
