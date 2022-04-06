@@ -405,17 +405,19 @@ def predict():
                     explode = (0.01, 0.01)
                     colors = [color_codes[key] for key in color_codes if key in teams_playing]
 
-                    plt.pie(percentage, labels = teams, colors = colors, autopct = '%1.0f%%', pctdistance = 1.5, explode = explode)
-                    centre_circle = plt.Circle((0, 0), 0.60, fc = 'white')
+                    plt.figure()
+                    plt.pie(percentage, labels = teams, colors = colors, autopct = '%1.0f%%', pctdistance = 0.70, explode = explode, textprops = {'fontsize' : 8})
+                    centre_circle = plt.Circle((0, 0), 0.50, fc = 'white')
                     fig = plt.gcf()
                     fig.gca().add_artist(centre_circle)
-                    fig.savefig('static/result.jpg')
+                    fig.savefig('static/result.png')
+                    plt.clf()
                     return render_template('predict.html', prediction_text = 'Based on the historical data, current score and playing conditions at the moment', batting_team = batting_team, bowling_team = bowling_team, venue = venue, runs = runs, wickets = wickets, runs_last_5_overs = runs_last_5_overs, wickets_last_5_overs = wickets_last_5_overs, toss_winner = toss_winner, overs = str(overs) + '.' + str(balls), innings = innings)
                 else:
                     return render_template('predict.html', prediction_text = 'Please wait till 5 overs to complete for better result. Thanks for your patience.', batting_team = batting_team, bowling_team = bowling_team, venue = venue, runs = runs, wickets = wickets, runs_last_5_overs = runs_last_5_overs, wickets_last_5_overs = wickets_last_5_overs, toss_winner = toss_winner, overs = str(overs) + '.' + str(balls), innings = innings)                
 
         elif innings == 0:
-            fig = plt.figure(figsize=(0.1, 0.1))
+            fig = plt.figure(figsize = (0.1, 0.1))
             fig.savefig('static/result.jpg')
             return render_template('predict.html', prediction_text = status)
 
