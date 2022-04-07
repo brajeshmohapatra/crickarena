@@ -39,6 +39,45 @@ def update_date():
     today = str(year) + '-' + str(month) + '-' + str(day)
     return today
 
+def team_initialize(team):
+
+    teams = {'Chennai Super Kings' : 0, 'Deccan Chargers' : 0, 'Delhi Capitals' : 0, 'Gujarat Lions' : 0, 
+             'Kochi Tuskers Kerala' : 0, 'Kolkata Knight Riders' : 0, 'Mumbai Indians' : 0, 'Pune Warriors' : 0, 
+             'Punjab Kings' : 0, 'Rajasthan Royals' : 0, 'Rising Pune Supergiant' : 0, 'Royal Challengers Bangalore' : 0, 
+             'Sunrisers Hyderabad' : 0}
+    if team in teams.keys():
+        teams[team] = 1
+    teams_list = list(teams.values())
+    return teams_list
+
+def venue_initialize(venue):
+
+    venues = {'Arun Jaitley Stadium' : 0, 'Barabati Stadium' : 0, 'Brabourne Stadium, Mumbai' : 0, 'Buffalo Park' : 0, 
+              'De Beers Diamond Oval' : 0, 'Dr DY Patil Sports Academy' : 0, 
+              'Dr. Y.S. Rajasekhara Reddy ACA-VDCA Cricket Stadium' : 0, 'Dubai International Cricket Stadium' : 0, 
+              'Eden Gardens' : 0, 'Green Park' : 0, 'Himachal Pradesh Cricket Association Stadium' : 0, 
+              'Holkar Cricket Stadium' : 0, 'JSCA International Stadium Complex' : 0, 'Kingsmead' : 0, 
+              'M Chinnaswamy Stadium' : 0, 'MA Chidambaram Stadium' : 0, 'Maharashtra Cricket Association Stadium, Pune' : 0, 
+              'Narendra Modi Stadium' : 0, 'Nehru Stadium' : 0, 'New Wanderers Stadium' : 0, 'Newlands' : 0, 
+              'OUTsurance Oval' : 0, 'Punjab Cricket Association IS Bindra Stadium' : 0, 
+              'Rajiv Gandhi International Stadium' : 0, 'Saurashtra Cricket Association Stadium' : 0, 
+              'Sawai Mansingh Stadium' : 0, 'Shaheed Veer Narayan Singh International Stadium' : 0, 
+              'Sharjah Cricket Stadium' : 0, 'Sheikh Zayed Stadium' : 0, 'St George\'s Park' : 0, 'SuperSport Park' : 0, 
+              'Vidarbha Cricket Association Stadium' : 0, 'Wankhede Stadium, Mumbai' : 0}
+    if venue in venues.keys():
+        venues[venue] = 1
+    venues_list = list(venues.values())
+    return venues_list
+
+
+def toss_initialize(toss_winner, batting_team, bowling_team):
+
+    if toss_winner == batting_team:
+        toss_list = [1, 0]
+    elif toss_winner == bowling_team:
+        toss_list = [0, 1]
+    return toss_list
+
 @app.route('/', methods = ['GET'])
 
 def home():
@@ -246,120 +285,7 @@ def predict():
         
         prediction_array = []
         
-        if batting_team == 'Chennai Super Kings':
-            prediction_array = prediction_array + [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif batting_team == 'Delhi Capitals':
-            prediction_array = prediction_array + [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif batting_team == 'Kolkata Knight Riders':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-        elif batting_team == 'Mumbai Indians':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
-        elif batting_team == 'Punjab Kings':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-        elif batting_team == 'Rajasthan Royals':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
-        elif batting_team == 'Royal Challengers Bangalore':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-        elif batting_team == 'Sunrisers Hyderabad':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-        else:
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-        
-        if bowling_team == 'Chennai Super Kings':
-            prediction_array = prediction_array + [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif bowling_team == 'Delhi Capitals':
-            prediction_array = prediction_array + [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif bowling_team == 'Kolkata Knight Riders':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-        elif bowling_team == 'Mumbai Indians':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
-        elif bowling_team == 'Punjab Kings':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-        elif bowling_team == 'Rajasthan Royals':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
-        elif bowling_team == 'Royal Challengers Bangalore':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-        elif bowling_team == 'Sunrisers Hyderabad':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-        else:
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-                     
-        if toss_winner == batting_team:
-            prediction_array = prediction_array + [1, 0]
-        elif toss_winner == bowling_team:
-            prediction_array = prediction_array + [0, 1]
-
-            
-        if venue == 'Arun_Jaitley_Stadium':
-            prediction_array = prediction_array + [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Barabati_Stadium':
-            prediction_array = prediction_array + [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Brabourne - CCI':
-            prediction_array = prediction_array + [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Buffalo_Park':
-            prediction_array = prediction_array + [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'De_Beers_Diamond_Oval':
-            prediction_array = prediction_array + [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'DY Patil Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Dr_YS_Rajasekhara_Reddy_ACA_VDCA_Cricket_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Dubai_International_Cricket_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Eden_Gardens':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Green_Park':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Himachal_Pradesh_Cricket_Association_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Holkar_Cricket_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'JSCA_International_Stadium_Complex':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Kingsmead':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'M_Chinnaswamy_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'MA_Chidambaram_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'MCA Stadium, Pune':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Narendra_Modi_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Nehru_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'New_Wanderers_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Newlands':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'OUTsurance_Oval':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Punjab_Cricket_Association_IS_Bindra_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Rajiv_Gandhi_International_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Saurashtra_Cricket_Association_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Sawai_Mansingh_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Shaheed_Veer_Narayan_Singh_International_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
-        elif venue == 'Sharjah_Cricket_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
-        elif venue == 'Sheikh_Zayed_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-        elif venue == 'St_George\'s_Park':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
-        elif venue == 'SuperSport_Park':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-        elif venue == 'Vidarbha_Cricket_Association_Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-        elif venue == 'Wankhede Stadium':
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-        else:
-            prediction_array = prediction_array + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        prediction_array = prediction_array + team_initialize(batting_team) + team_initialize(bowling_team) + toss_initialize(toss_winner, batting_team, bowling_team) + venue_initialize(venue)
 
         if innings == 1:
             balls_remaining = 120 - ((int(overs) * 6) + int(balls))
@@ -406,7 +332,7 @@ def predict():
                     colors = [color_codes[key] for key in color_codes if key in teams_playing]
 
                     plt.figure()
-                    plt.pie(percentage, labels = teams, colors = colors, autopct = '%1.0f%%', pctdistance = 0.70, explode = explode, textprops = {'fontsize' : 8})
+                    plt.pie(percentage, labels = teams, colors = colors, autopct = '%1.0f%%', pctdistance = 0.70, textprops = {'fontsize' : 8})
                     centre_circle = plt.Circle((0, 0), 0.50, fc = 'white')
                     fig = plt.gcf()
                     fig.gca().add_artist(centre_circle)
