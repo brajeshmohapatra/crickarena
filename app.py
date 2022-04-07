@@ -344,7 +344,7 @@ def predict():
 
         elif innings == 0:
             fig = plt.figure(figsize = (0.1, 0.1))
-            fig.savefig('static/result.jpg')
+            fig.savefig('static/result.png')
             return render_template('predict.html', prediction_text = status)
 
     else:
